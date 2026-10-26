@@ -1,0 +1,59 @@
+name: Windows installer
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths: ['src/**', 'electron/**', 'build/**', 'package.json', 'package-lock.json', '.github/workflows/windows-installer.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Stamp version
+        shell: bash
+        run: npm version "1.0.${{ github.run_number }}" --no-git-tag-version --allow-same-version
+
+      - name: Build NSIS installer
+        run: npx electron-builder --win nsis --x64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Emberfall-Online-Setup
+          path: dist/*.exe
+          if-no-files-found: error
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Emberfall Online 1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          files: dist/*.exe
+          body: |
+            Windows installer for Emberfall Online, built from ${{ github.sha }}.
+
+            1. Download `Emberfall-Online-Setup-1.0.${{ github.run_number }}.exe` below.
+            2. Run it. Windows SmartScreen may say "Windows protected your PC" because the installer isn't code-signed: click **More info → Run anyway**.
+            3. Pick an install folder, then launch Emberfall Online from the desktop or Start menu shortcut.
+
+            Saves live in `%APPDATA%\Emberfall Online` and survive updates.

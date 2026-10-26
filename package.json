@@ -1,0 +1,43 @@
+{
+  "name": "emberfall-online",
+  "productName": "Emberfall Online",
+  "version": "1.0.0",
+  "description": "A cosy offline 2D MMO-style RPG with 32-bit pixel art.",
+  "main": "electron/main.js",
+  "author": "ardenvaler",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis --x64 --publish never",
+    "build:web": "node scripts/bundle-web.mjs"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.16.1"
+  },
+  "build": {
+    "appId": "com.ardenvaler.emberfall",
+    "productName": "Emberfall Online",
+    "copyright": "Copyright © 2026 ardenvaler",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["electron/**/*", "src/**/*", "build/icon.png", "package.json"],
+    "asar": true,
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.ico",
+      "artifactName": "Emberfall-Online-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Emberfall Online",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
