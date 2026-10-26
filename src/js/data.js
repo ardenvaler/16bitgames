@@ -379,7 +379,7 @@ const D = (() => {
   const MOBS = {};
   for (const m of M) {
     const r = m.rank;
-    const hpMul = r === 'boss' ? 38 : r === 'mini' ? 13 : 1;
+    const hpMul = r === 'boss' ? 40 + m.lv * 2 : r === 'mini' ? 18 + m.lv * 0.9 : 1;
     const atkMul = r === 'boss' ? 1.7 : r === 'mini' ? 1.45 : 1;
     const expMul = r === 'boss' ? 60 : r === 'mini' ? 18 : 1;
     m.hp = Math.round(mobHp(m.lv) * hpMul * (m.size && !r ? 1.15 : 1));
